@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>WhatsApp Clone Messenger</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -103,6 +103,7 @@
                 height: 100vh;
                 box-shadow: none;
                 border: none;
+                padding-bottom: env(safe-area-inset-bottom, 0px);
             }
             .left-panel {
                 width: 100%;
@@ -116,14 +117,354 @@
                 width: 100%;
                 height: 100vh;
                 z-index: 10; /* Bring chat view to front */
+                padding-bottom: env(safe-area-inset-bottom, 0px);
             }
             #message-display {
-                height: calc(100vh - 78px);
+                height: calc(100vh - 78px - env(safe-area-inset-bottom, 0px));
+                padding-bottom: env(safe-area-inset-bottom, 0px);
             }
         }
         /* Modal Backdrop */
         .modal-backdrop {
             background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Image Modal Styles - WhatsApp-like */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            touch-action: none;
+        }
+        
+        .image-modal-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+            padding: 20px 16px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .image-modal-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .image-modal-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .image-modal-action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+            transition: background-color 0.2s;
+        }
+        
+        .image-modal-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .image-modal-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-modal img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        
+        .image-modal-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 16px 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .image-modal-zoom-controls {
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .zoom-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 50%;
+            color: white;
+            transition: background-color 0.2s;
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            .image-modal-header {
+                padding: 12px 16px 8px;
+            }
+            
+            .image-modal-back,
+            .image-modal-action-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            
+            .image-modal-footer {
+                padding: 12px 16px 16px;
+            }
+            
+            .zoom-btn {
+                min-width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+        }
+
+        /* WhatsApp-style Message Input */
+        .message-input-container {
+            background: #f0f0f0;
+            border-radius: 25px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 50px;
+            position: relative;
+        }
+
+        .attachment-menu {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 8px;
+            margin-bottom: 8px;
+            min-width: 200px;
+            z-index: 50;
+        }
+
+        .attachment-menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            gap: 12px;
+        }
+
+        .attachment-menu-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .attachment-menu-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .attachment-menu-text {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .emoji-btn, .attachment-btn, .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .emoji-btn:hover, .attachment-btn:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .send-btn {
+            background-color: #25D366;
+            color: white;
+        }
+
+        .send-btn:hover {
+            background-color: #128C7E;
+        }
+
+        .message-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 16px;
+            padding: 8px 12px;
+            color: #333;
+        }
+
+        .message-input::placeholder {
+            color: #999;
+        }
+
+        /* Audio Player Styles */
+        .audio-player {
+            min-width: 200px;
+            max-width: 300px;
+        }
+        
+        .audio-play-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .audio-play-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .audio-progress {
+            transition: all 0.1s ease;
+        }
+        
+        .audio-progress:hover {
+            height: 4px;
+        }
+        
+        .audio-progress-bar {
+            transition: width 0.1s ease;
+        }
+
+        /* Recording Interface Styles */
+        .voice-level-bar {
+            transition: height 0.1s ease, background-color 0.1s ease;
+        }
+        
+        .voice-level-bar.active {
+            background-color: #ef4444 !important;
+        }
+        
+        @keyframes voiceLevelPulse {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.2); }
+        }
+        
+        .voice-level-bar.animate {
+            animation: voiceLevelPulse 0.3s ease-in-out infinite;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .message-input-container {
+                padding: 6px 10px;
+                min-height: 44px;
+            }
+
+            .emoji-btn, .attachment-btn, .send-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .message-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+                padding: 6px 10px;
+            }
+
+            .attachment-menu {
+                min-width: 180px;
+                left: -10px;
+            }
+
+            .attachment-menu-item {
+                padding: 10px 14px;
+            }
+
+            .attachment-menu-text {
+                font-size: 15px;
+            }
+
+            /* Fix mobile navigation bar overlap */
+            #chat-input-area {
+                padding-bottom: calc(1rem + env(safe-area-inset-bottom, 20px));
+                margin-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            /* Ensure the chat app container accounts for mobile navigation */
+            .app-main-container {
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            /* Add extra bottom padding for older devices without safe-area support */
+            @supports not (padding: env(safe-area-inset-bottom)) {
+                #chat-input-area {
+                    padding-bottom: 2rem;
+                }
+            }
         }
     </style>
     <!-- Firebase Compat (non-ESM) -->
@@ -204,6 +545,10 @@
 
         window.mediaRecorder = null; 
         let audioChunks = [];
+        
+        // Reaction system variables
+        let lastTapTime = 0;
+        let lastTapMessageId = null;
 
         // === CLOUDINARY CONFIGURATION START ===
         // !!! IMPORTANT: REPLACE THESE WITH YOUR CLOUDINARY CREDENTIALS !!!
@@ -241,10 +586,19 @@
                 
                 if (selectedChat.type === 'contact') {
                     currentChatId = getPrivateChatId(currentUserId, selectedChat.uid);
-                    document.getElementById('chat-partner-name').textContent = selectedChat.name;
-                    // Load avatar for contact in header
+                    // Load avatar and name for contact in header
                     loadUserPublicProfile(selectedChat.uid).then((p) => {
                         const avatar = document.getElementById('chat-avatar');
+                        const nameElement = document.getElementById('chat-partner-name');
+                        
+                        // Update name with actual profile name
+                        if (p && p.name) {
+                            nameElement.textContent = p.name;
+                        } else {
+                            nameElement.textContent = selectedChat.name;
+                        }
+                        
+                        // Update avatar
                         if (avatar && p && p.photoURL) {
                             avatar.innerHTML = `<img src="${p.photoURL}" class="w-10 h-10 rounded-full object-cover" onerror="this.style.display='none'">`;
                         } else if (avatar) {
@@ -343,6 +697,16 @@
                 // Expose auth so environment checks and listeners that rely on it work consistently across devices
                 window.auth = auth;
 
+                // Set auth persistence: use in-memory on file:// to avoid IndexedDB restrictions on mobile
+                try {
+                    const desired = (location.protocol === 'file:') 
+                        ? firebase.auth.Auth.Persistence.NONE 
+                        : firebase.auth.Auth.Persistence.LOCAL;
+                    await firebase.auth().setPersistence(desired);
+                } catch (e) {
+                    console.warn('Failed to set auth persistence:', e);
+                }
+
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 }
@@ -381,7 +745,7 @@
             let profile;
             try {
                 const docSnap = await getDoc(userProfileRef);
-                if (docSnap.exists()) {
+                if (docSnap.exists) {
                     profile = docSnap.data();
                     currentUserName = profile.name || `User-${user.uid.substring(0, 6)}`;
                     currentUserPhotoUrl = profile.photoURL || null;
@@ -423,6 +787,13 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 document.getElementById('auth-error-message').textContent = '';
+                // Fallback: if onAuthStateChanged is delayed on some mobile contexts, push UI forward
+                setTimeout(() => {
+                    if (firebase.auth().currentUser) {
+                        showChatScreen();
+                        renderApp();
+                    }
+                }, 300);
             } catch (error) {
                 const msg =
                     error.message.includes('auth/unauthorized-domain') ?
@@ -448,6 +819,12 @@
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
                 document.getElementById('auth-error-message').textContent = '';
+                setTimeout(() => {
+                    if (firebase.auth().currentUser) {
+                        showChatScreen();
+                        renderApp();
+                    }
+                }, 300);
             } catch (error) {
                 const msg = error.message.includes('auth/unauthorized-domain') ?
                     'Unauthorized domain. Add this domain in Firebase Console > Authentication > Settings > Authorized domains.' : error.message;
@@ -624,13 +1001,20 @@
 
             const chatItem = (chat) => {
                 const isGroup = chat.type === 'group';
-                const nameDisplay = chat.name + (isGroup ? ' (Group)' : (chat.uid === currentUserId ? ' (Self)' : ''));
-                const subText = isGroup ? `${chat.members.length} members` : `UID: ${chat.uid.substring(0, 8)}...`;
                 const profile = !isGroup && userProfileCache[chat.uid] ? userProfileCache[chat.uid] : null;
-                const icon = isGroup ? '👥' : chat.name.charAt(0).toUpperCase();
+                
+                // Use actual profile name if available, otherwise fall back to stored name
+                let displayName = chat.name;
+                if (!isGroup && profile && profile.name) {
+                    displayName = profile.name;
+                }
+                
+                const nameDisplay = displayName + (isGroup ? ' (Group)' : (chat.uid === currentUserId ? ' (Self)' : ''));
+                const subText = isGroup ? `${chat.members.length} members` : `UID: ${chat.uid.substring(0, 8)}...`;
+                const icon = isGroup ? '👥' : displayName.charAt(0).toUpperCase();
 
                 return `
-                    <div onclick="navigateTo('chat', {id: '${chat.id}', name: '${chat.name}', uid: '${chat.uid || ''}', type: '${chat.type}'})"
+                    <div onclick="navigateTo('chat', {id: '${chat.id}', name: '${displayName}', uid: '${chat.uid || ''}', type: '${chat.type}'})"
                         class="flex items-center p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition duration-150">
                         <div class="w-12 h-12 rounded-full ${isGroup ? 'bg-blue-400' : 'bg-gray-300'} flex items-center justify-center text-white font-bold text-lg mr-3 flex-shrink-0 overflow-hidden">
                             ${isGroup ? (chat.photoURL ? `<img src='${chat.photoURL}' class='w-full h-full object-cover' onerror=\"this.style.display='none'\">` : icon) : (profile && profile.photoURL ? `<img src='${profile.photoURL}' class='w-full h-full object-cover' onerror=\"this.style.display='none'\">` : icon)}
@@ -657,7 +1041,7 @@
                 if (userProfileCache[uid]) return userProfileCache[uid];
                 const ref = doc(db, `/artifacts/${appId}/public/data/user_directory`, uid);
                 const snap = await getDoc(ref);
-                if (snap.exists()) {
+                if (snap.exists) {
                     const data = snap.data();
                     userProfileCache[uid] = { name: data.name, photoURL: data.photoURL || null };
                     return userProfileCache[uid];
@@ -707,7 +1091,7 @@
                 const targetRef = doc(db, `/artifacts/${appId}/public/data/user_directory`, targetUid);
                 const targetSnap = await getDoc(targetRef);
 
-                if (targetSnap.exists()) {
+                if (targetSnap.exists) {
                     const targetUser = targetSnap.data();
                     
                     // Add the user to the current user's private contacts subcollection
@@ -735,15 +1119,21 @@
         // NEW GROUP MODAL LOGIC
         // ===================================
         
-        window.showNewGroupModal = function() {
+        window.showNewGroupModal = async function() {
             const listContainer = document.getElementById('group-contact-list');
-            listContainer.innerHTML = '';
+            listContainer.innerHTML = '<p class="text-center text-gray-500 p-4">Loading contacts...</p>';
             
             if (currentContacts.length === 0) {
                 listContainer.innerHTML = '<p class="text-red-500 text-center">Please add at least one contact first to create a group.</p>';
                 document.getElementById('create-group-button').classList.add('hidden');
             } else {
                 document.getElementById('create-group-button').classList.remove('hidden');
+                
+                // Load profile names for all contacts first
+                await Promise.all(currentContacts.map(contact => loadUserPublicProfile(contact.uid)));
+                
+                // Clear loading message
+                listContainer.innerHTML = '';
                 
                 // Add the current user first (they are always a member)
                 const selfCheck = `
@@ -758,14 +1148,18 @@
                 `;
                 listContainer.innerHTML += selfCheck;
 
-                // Add contacts
+                // Add contacts with proper profile names
                 currentContacts.forEach(contact => {
+                    // Get the actual profile name if available
+                    const profile = userProfileCache[contact.uid];
+                    const displayName = profile && profile.name ? profile.name : contact.name;
+                    
                     const item = `
                         <div class="flex items-center p-2 border-b border-gray-100">
                             <input type="checkbox" id="member-${contact.uid}" name="group-member" value="${contact.uid}" 
-                                    data-name="${contact.name}" class="w-4 h-4 text-green-600 bg-gray-100 rounded focus:ring-green-500">
+                                    data-name="${displayName}" class="w-4 h-4 text-green-600 bg-gray-100 rounded focus:ring-green-500">
                             <label for="member-${contact.uid}" class="ml-3 font-medium text-gray-700 flex-grow">
-                                ${contact.name}
+                                ${displayName}
                             </label>
                         </div>
                     `;
@@ -862,8 +1256,6 @@
         // Floating reaction picker (dblclick / double-tap)
         let activeReactionPicker = null; // DOM element
         let activeReactionMessageId = null;
-        let lastTapTime = 0;
-        let lastTapMessageId = null;
 
         function closeReactionPicker() {
             if (activeReactionPicker && activeReactionPicker.parentNode) {
@@ -909,7 +1301,7 @@
             try {
                 const messageRef = doc(db, `/artifacts/${appId}/public/data/chats/${currentChatId}/messages`, messageId);
                 const snap = await getDoc(messageRef);
-                if (!snap.exists()) return;
+                if (!snap.exists) return;
                 const data = snap.data() || {};
                 const reactions = data.reactions || {};
                 const currentArray = Array.isArray(reactions[emoji]) ? reactions[emoji] : [];
@@ -963,7 +1355,7 @@
         /**
          * Sends a message to Firestore.
          */
-        async function sendMessage(type, content) {
+        async function sendMessage(type, content, fileName = null) {
             if (!currentChatId || !currentUserId || !selectedChat) {
                 displayError("Chat not selected or user not authenticated. Cannot send message.");
                 return;
@@ -977,6 +1369,11 @@
                 content: content,
                 timestamp: serverTimestamp()
             };
+
+            // Add fileName for document messages
+            if (type === 'document' && fileName) {
+                newMessage.fileName = fileName;
+            }
 
             try {
                 await addDoc(getMessagesCollectionRef(currentChatId), newMessage);
@@ -1028,19 +1425,65 @@
                         break;
                     case 'image':
                         contentHTML = `<div class=\"relative\">\n` +
-                            `<img src=\"${msg.content}\" class=\"w-full max-h-64 object-cover rounded-lg cursor-pointer\" onclick=\"window.open('${msg.content}', '_blank')\" onerror=\"this.onerror=null;this.src='https://placehold.co/200x150/ff0000/ffffff?text=Image+Load+Error';\" alt=\"Image Message\">` +
-                            (!isSender ? `\n<div class=\"absolute -bottom-3 left-2 right-2 flex items-center space-x-2 sm:opacity-0 sm:group-hover:opacity-100 transition\">\n` +
-                                `<div class=\"bg-white/90 backdrop-blur px-2 py-1 rounded-full shadow border flex items-center space-x-1 overflow-x-auto\">\n` +
-                                    `${['👍','❤️','😂','😮','😢','🔥'].map(e => `<button class=\\\"text-sm\\\" onclick=\\\"window.toggleReaction('${msg.id}','${e}')\\\">${e}</button>`).join('')}` +
-                                `</div>\n` +
-                            `</div>` : '') +
+                            `<img src=\"${msg.content}\" class=\"w-full max-h-64 object-cover rounded-lg cursor-pointer\" onclick=\"window.openImageModal('${msg.content}')\" onerror=\"this.onerror=null;this.src='https://placehold.co/200x150/ff0000/ffffff?text=Image+Load+Error';\" alt=\"Image Message\">` +
                         `</div>`;
                         break;
                     case 'video':
                         contentHTML = `<video src="${msg.content}" controls class="w-full max-h-64 rounded-lg bg-black"></video>`;
                         break;
                     case 'audio':
-                        contentHTML = `<audio src="${msg.content}" controls class="w-full"></audio>`;
+                        contentHTML = `
+                            <div class="audio-player bg-gray-50 rounded-lg p-3 max-w-xs">
+                                <div class="flex items-center space-x-3">
+                                    <button class="audio-play-btn w-10 h-10 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center text-white transition-colors" 
+                                            onclick="toggleAudioPlayback('${msg.id}')" data-audio-id="${msg.id}">
+                                        <svg class="play-icon w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                        <svg class="pause-icon w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                        </svg>
+                                    </button>
+                                    <div class="flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <span class="text-sm font-medium text-gray-700">Voice Message</span>
+                                            <span class="audio-duration text-xs text-gray-500" data-audio-id="${msg.id}">--:--</span>
+                                        </div>
+                                        <div class="audio-progress bg-gray-200 rounded-full h-1 cursor-pointer" onclick="seekAudio('${msg.id}', event)">
+                                            <div class="audio-progress-bar bg-green-500 h-1 rounded-full transition-all duration-100" style="width: 0%" data-audio-id="${msg.id}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <audio class="hidden" data-audio-id="${msg.id}" preload="metadata">
+                                    <source src="${msg.content}" type="audio/webm">
+                                    <source src="${msg.content}" type="audio/mp3">
+                                    <source src="${msg.content}" type="audio/wav">
+                                </audio>
+                            </div>
+                        `;
+                        break;
+                    case 'document':
+                        const fileName = msg.fileName || 'Document';
+                        const fileExtension = fileName.split('.').pop().toLowerCase();
+                        const fileIcon = getFileIcon(fileExtension);
+                        contentHTML = `
+                            <div class="flex items-center p-3 bg-gray-50 rounded-lg border cursor-pointer hover:bg-gray-100 transition-colors" onclick="window.open('${msg.content}', '_blank')">
+                                <div class="flex-shrink-0 mr-3">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="text-2xl">${fileIcon}</span>
+                                    </div>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate">${fileName}</p>
+                                    <p class="text-xs text-gray-500">Tap to download</p>
+                                </div>
+                                <div class="flex-shrink-0 ml-2">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        `;
                         break;
                 }
 
@@ -1099,6 +1542,18 @@
                     bubble.appendChild(actions);
                     bubble.addEventListener('mouseenter', () => actions.classList.remove('hidden'));
                     bubble.addEventListener('mouseleave', () => actions.classList.add('hidden'));
+                }
+
+                // Add reaction buttons for all message types (not just images)
+                if (!isSender) {
+                    const reactionButtons = document.createElement('div');
+                    reactionButtons.className = 'absolute -bottom-3 left-2 right-2 flex items-center space-x-2 sm:opacity-0 sm:group-hover:opacity-100 transition';
+                    reactionButtons.innerHTML = `
+                        <div class="bg-white/90 backdrop-blur px-2 py-1 rounded-full shadow border flex items-center space-x-1 overflow-x-auto">
+                            ${['👍','❤️','😂','😮','😢','🔥'].map(e => `<button class="text-sm" onclick="window.toggleReaction('${msg.id}','${e}')">${e}</button>`).join('')}
+                        </div>
+                    `;
+                    bubble.appendChild(reactionButtons);
                 }
 
                 // Double-click (desktop)
@@ -1166,6 +1621,467 @@
                 displayError('Failed to delete message: ' + e.message);
             }
         }
+
+        // ===== Message Reaction Functions =====
+        window.toggleReaction = async function(messageId, emoji) {
+            if (!currentChatId || !messageId || !emoji) return;
+            
+            try {
+                const messageRef = doc(db, `/artifacts/${appId}/public/data/chats/${currentChatId}/messages`, messageId);
+                const messageSnap = await getDoc(messageRef);
+                
+                if (!messageSnap.exists) {
+                    displayError('Message not found');
+                    return;
+                }
+                
+                const messageData = messageSnap.data();
+                const reactions = messageData.reactions || {};
+                const emojiReactions = reactions[emoji] || [];
+                
+                // Check if user already reacted with this emoji
+                const userIndex = emojiReactions.indexOf(currentUserId);
+                
+                if (userIndex > -1) {
+                    // Remove user's reaction
+                    emojiReactions.splice(userIndex, 1);
+                    if (emojiReactions.length === 0) {
+                        delete reactions[emoji];
+                    } else {
+                        reactions[emoji] = emojiReactions;
+                    }
+                } else {
+                    // Add user's reaction
+                    reactions[emoji] = [...emojiReactions, currentUserId];
+                }
+                
+                // Update the message with new reactions
+                await updateDoc(messageRef, { reactions: reactions });
+                
+            } catch (error) {
+                console.error('Error toggling reaction:', error);
+                displayError('Failed to update reaction: ' + error.message);
+            }
+        }
+
+        window.openReactionPicker = function(messageId, x, y) {
+            // Create reaction picker modal
+            const existingPicker = document.getElementById('reaction-picker');
+            if (existingPicker) {
+                existingPicker.remove();
+            }
+            
+            const picker = document.createElement('div');
+            picker.id = 'reaction-picker';
+            picker.className = 'fixed z-50 bg-white rounded-lg shadow-lg border p-2 flex space-x-1';
+            picker.style.left = Math.min(x - 100, window.innerWidth - 220) + 'px';
+            picker.style.top = Math.max(y - 60, 10) + 'px';
+            
+            const emojis = ['👍', '❤️', '😂', '😮', '😢', '🔥', '👏', '🎉'];
+            
+            emojis.forEach(emoji => {
+                const button = document.createElement('button');
+                button.textContent = emoji;
+                button.className = 'text-2xl p-2 hover:bg-gray-100 rounded transition-colors';
+                button.onclick = () => {
+                    window.toggleReaction(messageId, emoji);
+                    picker.remove();
+                };
+                picker.appendChild(button);
+            });
+            
+            document.body.appendChild(picker);
+            
+            // Close picker when clicking outside
+            const closePicker = (e) => {
+                if (!picker.contains(e.target)) {
+                    picker.remove();
+                    document.removeEventListener('click', closePicker);
+                }
+            };
+            
+            setTimeout(() => {
+                document.addEventListener('click', closePicker);
+            }, 100);
+        }
+
+        // ===== Image Modal Functions - WhatsApp-like =====
+        let imageModalData = {
+            scale: 1,
+            translateX: 0,
+            translateY: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            lastTouchDistance: 0
+        };
+
+        window.openImageModal = function(imageUrl) {
+            // Remove existing modal if any
+            const existingModal = document.getElementById('image-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Reset modal data
+            imageModalData = {
+                scale: 1,
+                translateX: 0,
+                translateY: 0,
+                isDragging: false,
+                startX: 0,
+                startY: 0,
+                lastTouchDistance: 0
+            };
+            
+            // Create modal
+            const modal = document.createElement('div');
+            modal.id = 'image-modal';
+            modal.className = 'image-modal';
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'image-modal-header';
+            header.innerHTML = `
+                <button class="image-modal-back" onclick="closeImageModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="image-modal-actions">
+                    <button class="image-modal-action-btn" onclick="shareImage('${imageUrl}')" title="Share">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"/>
+                            <circle cx="6" cy="12" r="3"/>
+                            <circle cx="18" cy="19" r="3"/>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                        </svg>
+                    </button>
+                    <button class="image-modal-action-btn" onclick="downloadImage('${imageUrl}')" title="Download">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            // Create content area
+            const content = document.createElement('div');
+            content.className = 'image-modal-content';
+            
+            // Create image
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = 'Chat Image';
+            img.id = 'modal-image';
+            img.draggable = false;
+            
+            // Add touch and mouse events for zoom and pan
+            addImageModalEvents(img);
+            
+            // Create footer with zoom controls
+            const footer = document.createElement('div');
+            footer.className = 'image-modal-footer';
+            footer.innerHTML = `
+                <div class="image-modal-zoom-controls">
+                    <button class="zoom-btn" onclick="zoomImage(-0.2)" title="Zoom Out">−</button>
+                    <button class="zoom-btn" onclick="resetImageZoom()" title="Reset">⌂</button>
+                    <button class="zoom-btn" onclick="zoomImage(0.2)" title="Zoom In">+</button>
+                </div>
+            `;
+            
+            // Assemble modal
+            content.appendChild(img);
+            modal.appendChild(header);
+            modal.appendChild(content);
+            modal.appendChild(footer);
+            
+            // Add to page
+            document.body.appendChild(modal);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            
+            // Close on Escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeImageModal();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
+        }
+
+        function addImageModalEvents(img) {
+            // Mouse events
+            img.addEventListener('mousedown', handleMouseDown);
+            img.addEventListener('mousemove', handleMouseMove);
+            img.addEventListener('mouseup', handleMouseUp);
+            img.addEventListener('wheel', handleWheel);
+            
+            // Touch events
+            img.addEventListener('touchstart', handleTouchStart, { passive: false });
+            img.addEventListener('touchmove', handleTouchMove, { passive: false });
+            img.addEventListener('touchend', handleTouchEnd, { passive: false });
+            
+            // Double click to reset zoom
+            img.addEventListener('dblclick', resetImageZoom);
+        }
+
+        function handleMouseDown(e) {
+            if (imageModalData.scale > 1) {
+                imageModalData.isDragging = true;
+                imageModalData.startX = e.clientX - imageModalData.translateX;
+                imageModalData.startY = e.clientY - imageModalData.translateY;
+                e.preventDefault();
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (imageModalData.isDragging && imageModalData.scale > 1) {
+                imageModalData.translateX = e.clientX - imageModalData.startX;
+                imageModalData.translateY = e.clientY - imageModalData.startY;
+                updateImageTransform();
+                e.preventDefault();
+            }
+        }
+
+        function handleMouseUp(e) {
+            imageModalData.isDragging = false;
+        }
+
+        function handleWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            zoomImage(delta);
+        }
+
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) {
+                // Single touch - start dragging
+                if (imageModalData.scale > 1) {
+                    imageModalData.isDragging = true;
+                    imageModalData.startX = e.touches[0].clientX - imageModalData.translateX;
+                    imageModalData.startY = e.touches[0].clientY - imageModalData.translateY;
+                }
+            } else if (e.touches.length === 2) {
+                // Two touches - pinch to zoom
+                const distance = getTouchDistance(e.touches[0], e.touches[1]);
+                imageModalData.lastTouchDistance = distance;
+                e.preventDefault();
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (e.touches.length === 1 && imageModalData.isDragging && imageModalData.scale > 1) {
+                // Single touch dragging
+                imageModalData.translateX = e.touches[0].clientX - imageModalData.startX;
+                imageModalData.translateY = e.touches[0].clientY - imageModalData.startY;
+                updateImageTransform();
+            } else if (e.touches.length === 2) {
+                // Pinch to zoom
+                const distance = getTouchDistance(e.touches[0], e.touches[1]);
+                const scaleChange = distance / imageModalData.lastTouchDistance;
+                const newScale = imageModalData.scale * scaleChange;
+                
+                if (newScale >= 0.5 && newScale <= 3) {
+                    imageModalData.scale = newScale;
+                    updateImageTransform();
+                }
+                
+                imageModalData.lastTouchDistance = distance;
+                e.preventDefault();
+            }
+        }
+
+        function handleTouchEnd(e) {
+            imageModalData.isDragging = false;
+        }
+
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function updateImageTransform() {
+            const img = document.getElementById('modal-image');
+            if (img) {
+                img.style.transform = `scale(${imageModalData.scale}) translate(${imageModalData.translateX}px, ${imageModalData.translateY}px)`;
+            }
+        }
+
+        window.closeImageModal = function() {
+            const modal = document.getElementById('image-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+
+        window.zoomImage = function(factor) {
+            const newScale = Math.max(0.5, Math.min(3, imageModalData.scale + factor));
+            imageModalData.scale = newScale;
+            
+            // Reset translation if zooming out to fit
+            if (imageModalData.scale <= 1) {
+                imageModalData.translateX = 0;
+                imageModalData.translateY = 0;
+            }
+            
+            updateImageTransform();
+        }
+
+        window.resetImageZoom = function() {
+            imageModalData.scale = 1;
+            imageModalData.translateX = 0;
+            imageModalData.translateY = 0;
+            updateImageTransform();
+        }
+
+        window.shareImage = async function(imageUrl) {
+            if (navigator.share) {
+                try {
+                    // Fetch the image as blob
+                    const response = await fetch(imageUrl);
+                    const blob = await response.blob();
+                    const file = new File([blob], 'image.jpg', { type: blob.type });
+                    
+                    await navigator.share({
+                        title: 'Shared Image',
+                        text: 'Check out this image!',
+                        files: [file]
+                    });
+                } catch (error) {
+                    console.log('Share failed:', error);
+                    fallbackShare(imageUrl);
+                }
+            } else {
+                fallbackShare(imageUrl);
+            }
+        }
+
+        function fallbackShare(imageUrl) {
+            // Copy to clipboard as fallback
+            navigator.clipboard.writeText(imageUrl).then(() => {
+                displayError('Image URL copied to clipboard!');
+            }).catch(() => {
+                // Final fallback - open in new tab
+                window.open(imageUrl, '_blank');
+            });
+        }
+
+        window.downloadImage = async function(imageUrl) {
+            try {
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `whatsapp-image-${Date.now()}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                displayError('Image downloaded successfully!');
+            } catch (error) {
+                console.error('Download failed:', error);
+                displayError('Download failed. Please try again.');
+            }
+        }
+
+        // ===== Attachment Menu Functions =====
+        window.toggleAttachmentMenu = function() {
+            const menu = document.getElementById('attachment-menu');
+            menu.classList.toggle('hidden');
+            
+            // Close menu when clicking outside
+            if (!menu.classList.contains('hidden')) {
+                const closeMenu = (e) => {
+                    if (!menu.contains(e.target) && !e.target.closest('.attachment-btn')) {
+                        menu.classList.add('hidden');
+                        document.removeEventListener('click', closeMenu);
+                    }
+                };
+                setTimeout(() => {
+                    document.addEventListener('click', closeMenu);
+                }, 100);
+            }
+        }
+
+        window.selectPhotosAndVideos = function() {
+            document.getElementById('image-input').click();
+            document.getElementById('attachment-menu').classList.add('hidden');
+        }
+
+        window.openCamera = function() {
+            document.getElementById('camera-input').click();
+            document.getElementById('attachment-menu').classList.add('hidden');
+        }
+
+        window.selectDocument = function() {
+            document.getElementById('document-input').click();
+            document.getElementById('attachment-menu').classList.add('hidden');
+        }
+
+        // ===== Updated Button Visibility Logic =====
+        function updateMessageButtons() {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const recordButton = document.getElementById('record-button');
+            const stopRecordButton = document.getElementById('stop-record-button');
+            
+            const hasText = messageInput.value.trim().length > 0;
+            const isRecording = window.mediaRecorder && window.mediaRecorder.state === 'recording';
+            
+            if (isRecording) {
+                sendButton.classList.add('hidden');
+                recordButton.classList.add('hidden');
+                stopRecordButton.classList.remove('hidden');
+            } else if (hasText) {
+                sendButton.classList.remove('hidden');
+                recordButton.classList.add('hidden');
+                stopRecordButton.classList.add('hidden');
+            } else {
+                sendButton.classList.add('hidden');
+                recordButton.classList.remove('hidden');
+                stopRecordButton.classList.add('hidden');
+            }
+        }
+
+        // ===== File Icon Helper =====
+        function getFileIcon(extension) {
+            const iconMap = {
+                'pdf': '📄',
+                'doc': '📝',
+                'docx': '📝',
+                'txt': '📄',
+                'rtf': '📄',
+                'xls': '📊',
+                'xlsx': '📊',
+                'ppt': '📊',
+                'pptx': '📊',
+                'zip': '🗜️',
+                'rar': '🗜️',
+                '7z': '🗜️',
+                'mp3': '🎵',
+                'wav': '🎵',
+                'mp4': '🎬',
+                'avi': '🎬',
+                'mov': '🎬',
+                'jpg': '🖼️',
+                'jpeg': '🖼️',
+                'png': '🖼️',
+                'gif': '🖼️',
+                'svg': '🖼️'
+            };
+            return iconMap[extension] || '📎';
+        }
         
         // ===================================
         // CLOUDINARY & MEDIA LOGIC (Unchanged)
@@ -1209,13 +2125,26 @@
             document.getElementById('loading-indicator').classList.remove('hidden');
             document.getElementById('loading-text').textContent = `Uploading ${type}...`;
             
-            const resourceType = type === 'image' ? 'image' : 'video';
+            let resourceType;
+            let messageType;
+            
+            if (type === 'image' || type === 'camera') {
+                resourceType = 'image';
+                messageType = 'image';
+            } else if (type === 'video') {
+                resourceType = 'video';
+                messageType = 'video';
+            } else if (type === 'document') {
+                resourceType = 'raw';
+                messageType = 'document';
+            }
+            
             const url = await uploadToCloudinary(file, resourceType);
             
             document.getElementById('loading-indicator').classList.add('hidden');
 
             if (url) {
-                sendMessage(type, url);
+                sendMessage(messageType, url, file.name);
             }
             input.value = null;
         }
@@ -1258,6 +2187,15 @@
                 window.mediaRecorder = new MediaRecorder(stream);
                 audioChunks = [];
                 
+                // Set up audio context for voice level monitoring
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const analyser = audioContext.createAnalyser();
+                const microphone = audioContext.createMediaStreamSource(stream);
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                
+                microphone.connect(analyser);
+                analyser.fftSize = 256;
+                
                 window.mediaRecorder.ondataavailable = (event) => {
                     audioChunks.push(event.data);
                 };
@@ -1265,35 +2203,67 @@
                 window.mediaRecorder.onstop = async () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                     
-                    document.getElementById('record-button').style.display = 'none';
-                    document.getElementById('stop-record-button').classList.add('hidden');
-                    document.getElementById('loading-indicator').classList.remove('hidden');
-                    document.getElementById('loading-text').textContent = 'Uploading audio...';
+                    // Hide recording interface
+                    const recordingInterface = document.getElementById('recording-interface');
+                    if (recordingInterface) recordingInterface.classList.add('hidden');
+                    
+                    // Stop voice level monitoring
+                    if (window.recordingInterval) {
+                        clearInterval(window.recordingInterval);
+                        window.recordingInterval = null;
+                    }
+                    
+                    // Show loading state
+                    const recordButton = document.getElementById('record-button');
+                    const stopRecordButton = document.getElementById('stop-record-button');
+                    const sendButton = document.getElementById('send-button');
+                    
+                    if (recordButton) recordButton.classList.add('hidden');
+                    if (stopRecordButton) stopRecordButton.classList.add('hidden');
+                    if (sendButton) sendButton.classList.add('hidden');
+                    
+                    // Show loading indicator
+                    const loadingIndicator = document.getElementById('loading-indicator');
+                    const loadingText = document.getElementById('loading-text');
+                    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                    if (loadingText) loadingText.textContent = 'Uploading audio...';
 
                     const url = await uploadToCloudinary(audioBlob, 'raw');
 
-                    document.getElementById('loading-indicator').classList.add('hidden');
+                    // Hide loading indicator
+                    if (loadingIndicator) loadingIndicator.classList.add('hidden');
                     
                     // Reset buttons after upload attempt
-                    document.getElementById('record-icon').classList.remove('recording-indicator');
-                    if (document.getElementById('message-input').value.trim().length === 0) {
-                        document.getElementById('record-button').style.display = 'block';
-                    } else {
-                        document.getElementById('send-text-button').style.display = 'block';
-                    }
+                    updateMessageButtons();
 
                     if (url) {
                         sendMessage('audio', url);
                     }
 
                     stream.getTracks().forEach(track => track.stop());
+                    audioContext.close();
                 };
 
                 window.mediaRecorder.start();
-                document.getElementById('record-button').style.display = 'none';
-                document.getElementById('stop-record-button').classList.remove('hidden');
-                document.getElementById('send-text-button').style.display = 'none';
-                document.getElementById('record-icon').classList.add('recording-indicator');
+                
+                // Show recording interface
+                const recordingInterface = document.getElementById('recording-interface');
+                if (recordingInterface) recordingInterface.classList.remove('hidden');
+                
+                // Start recording timer
+                startRecordingTimer();
+                
+                // Start voice level monitoring
+                startVoiceLevelMonitoring(analyser, dataArray);
+                
+                // Update button visibility
+                const recordButton = document.getElementById('record-button');
+                const stopRecordButton = document.getElementById('stop-record-button');
+                const sendButton = document.getElementById('send-button');
+                
+                if (recordButton) recordButton.classList.add('hidden');
+                if (stopRecordButton) stopRecordButton.classList.remove('hidden');
+                if (sendButton) sendButton.classList.add('hidden');
 
             } catch (error) {
                 console.error("Error starting audio recording:", error);
@@ -1304,6 +2274,189 @@
         window.stopRecording = function() {
             if (window.mediaRecorder && window.mediaRecorder.state === 'recording') {
                 window.mediaRecorder.stop();
+                stopRecordingTimer();
+            }
+        }
+
+        // Recording timer functionality
+        let recordingStartTime = null;
+        let recordingTimerInterval = null;
+
+        function startRecordingTimer() {
+            recordingStartTime = Date.now();
+            recordingTimerInterval = setInterval(updateRecordingTimer, 100);
+        }
+
+        function updateRecordingTimer() {
+            if (!recordingStartTime) return;
+            
+            const elapsed = Date.now() - recordingStartTime;
+            const seconds = Math.floor(elapsed / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            
+            const timerElement = document.getElementById('recording-timer');
+            if (timerElement) {
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function stopRecordingTimer() {
+            if (recordingTimerInterval) {
+                clearInterval(recordingTimerInterval);
+                recordingTimerInterval = null;
+            }
+            recordingStartTime = null;
+            
+            const timerElement = document.getElementById('recording-timer');
+            if (timerElement) {
+                timerElement.textContent = '00:00';
+            }
+        }
+
+        // Voice level monitoring functionality
+        function startVoiceLevelMonitoring(analyser, dataArray) {
+            const voiceLevelBars = document.querySelectorAll('.voice-level-bar');
+            
+            function updateVoiceLevels() {
+                analyser.getByteFrequencyData(dataArray);
+                
+                // Calculate average volume
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / dataArray.length;
+                
+                // Map volume to bar heights (0-100 to 0-8 bars)
+                const activeBars = Math.min(8, Math.max(1, Math.floor((average / 255) * 8)));
+                
+                // Update bar states
+                voiceLevelBars.forEach((bar, index) => {
+                    if (index < activeBars) {
+                        bar.classList.add('active');
+                        // Add some randomness for more realistic effect
+                        if (Math.random() > 0.7) {
+                            bar.classList.add('animate');
+                        } else {
+                            bar.classList.remove('animate');
+                        }
+                    } else {
+                        bar.classList.remove('active', 'animate');
+                    }
+                });
+            }
+            
+            // Update voice levels every 100ms
+            window.recordingInterval = setInterval(updateVoiceLevels, 100);
+        }
+
+        // Audio playback functionality
+        let currentPlayingAudio = null;
+
+        window.toggleAudioPlayback = function(audioId) {
+            const audio = document.querySelector(`audio[data-audio-id="${audioId}"]`);
+            const playBtn = document.querySelector(`button[data-audio-id="${audioId}"]`);
+            const playIcon = playBtn.querySelector('.play-icon');
+            const pauseIcon = playBtn.querySelector('.pause-icon');
+            const progressBar = document.querySelector(`.audio-progress-bar[data-audio-id="${audioId}"]`);
+            const durationSpan = document.querySelector(`.audio-duration[data-audio-id="${audioId}"]`);
+
+            if (!audio) return;
+
+            // Stop any currently playing audio
+            if (currentPlayingAudio && currentPlayingAudio !== audio) {
+                stopCurrentAudio();
+            }
+
+            if (audio.paused) {
+                // Start playing
+                audio.play().then(() => {
+                    currentPlayingAudio = audio;
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                    playBtn.classList.add('bg-green-600');
+                    playBtn.classList.remove('bg-green-500');
+                    
+                    // Set up progress tracking
+                    audio.addEventListener('timeupdate', () => updateAudioProgress(audioId));
+                    audio.addEventListener('ended', () => resetAudioButton(audioId));
+                    audio.addEventListener('loadedmetadata', () => updateAudioDuration(audioId));
+                }).catch(error => {
+                    console.error('Error playing audio:', error);
+                    displayError('Could not play audio: ' + error.message);
+                });
+            } else {
+                // Pause playing
+                audio.pause();
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                playBtn.classList.remove('bg-green-600');
+                playBtn.classList.add('bg-green-500');
+                currentPlayingAudio = null;
+            }
+        }
+
+        function stopCurrentAudio() {
+            if (currentPlayingAudio) {
+                const audioId = currentPlayingAudio.dataset.audioId;
+                currentPlayingAudio.pause();
+                currentPlayingAudio.currentTime = 0;
+                resetAudioButton(audioId);
+                currentPlayingAudio = null;
+            }
+        }
+
+        function resetAudioButton(audioId) {
+            const playBtn = document.querySelector(`button[data-audio-id="${audioId}"]`);
+            const playIcon = playBtn.querySelector('.play-icon');
+            const pauseIcon = playBtn.querySelector('.pause-icon');
+            const progressBar = document.querySelector(`.audio-progress-bar[data-audio-id="${audioId}"]`);
+            
+            if (playBtn) {
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+                playBtn.classList.remove('bg-green-600');
+                playBtn.classList.add('bg-green-500');
+            }
+            
+            if (progressBar) {
+                progressBar.style.width = '0%';
+            }
+        }
+
+        function updateAudioProgress(audioId) {
+            const audio = document.querySelector(`audio[data-audio-id="${audioId}"]`);
+            const progressBar = document.querySelector(`.audio-progress-bar[data-audio-id="${audioId}"]`);
+            
+            if (audio && progressBar && audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = progress + '%';
+            }
+        }
+
+        function updateAudioDuration(audioId) {
+            const audio = document.querySelector(`audio[data-audio-id="${audioId}"]`);
+            const durationSpan = document.querySelector(`.audio-duration[data-audio-id="${audioId}"]`);
+            
+            if (audio && durationSpan && audio.duration) {
+                const minutes = Math.floor(audio.duration / 60);
+                const seconds = Math.floor(audio.duration % 60);
+                durationSpan.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        window.seekAudio = function(audioId, event) {
+            const audio = document.querySelector(`audio[data-audio-id="${audioId}"]`);
+            const progressContainer = event.currentTarget;
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const width = rect.width;
+            const percentage = clickX / width;
+            
+            if (audio && audio.duration) {
+                audio.currentTime = audio.duration * percentage;
+                updateAudioProgress(audioId);
             }
         }
 
@@ -1370,20 +2523,32 @@
         }
 
         // ===== Add members to group =====
-        window.showAddMembersModal = function() {
+        window.showAddMembersModal = async function() {
             if (!selectedChat || selectedChat.type !== 'group') { displayError('Select a group chat.'); return; }
             const listContainer = document.getElementById('add-members-list');
-            listContainer.innerHTML = '';
+            listContainer.innerHTML = '<p class="text-center text-gray-500 p-3">Loading contacts...</p>';
+            
             const members = selectedChat.members || [];
             const eligible = currentContacts.filter(c => !members.includes(c.uid));
+            
             if (eligible.length === 0) {
                 listContainer.innerHTML = '<p class="text-sm text-gray-600 p-3">No eligible contacts to add.</p>';
             } else {
+                // Load profile names for all eligible contacts first
+                await Promise.all(eligible.map(contact => loadUserPublicProfile(contact.uid)));
+                
+                // Clear loading message
+                listContainer.innerHTML = '';
+                
                 eligible.forEach(contact => {
+                    // Get the actual profile name if available
+                    const profile = userProfileCache[contact.uid];
+                    const displayName = profile && profile.name ? profile.name : contact.name;
+                    
                     listContainer.innerHTML += `
                         <div class="flex items-center p-2 border-b border-gray-100">
                             <input type="checkbox" id="add-${contact.uid}" value="${contact.uid}" class="w-4 h-4 text-green-600">
-                            <label for="add-${contact.uid}" class="ml-3">${contact.name}</label>
+                            <label for="add-${contact.uid}" class="ml-3">${displayName}</label>
                         </div>`;
                 });
             }
@@ -1628,56 +2793,141 @@
                     <div class="text-center text-gray-500 p-4">Select a chat to begin messaging.</div>
                 </div>
 
-                <!-- Input Area -->
-                <div id="chat-input-area" class="p-3 border-t bg-gray-50 flex items-center shadow-inner flex-shrink-0">
+                <!-- Input Area - WhatsApp Style -->
+                <div id="chat-input-area" class="p-3 border-t bg-white flex-shrink-0">
                     
                     <!-- Hidden File Inputs -->
                     <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleFileSelect('image')">
                     <input type="file" id="video-input" accept="video/*" class="hidden" onchange="handleFileSelect('video')">
+                    <input type="file" id="document-input" accept="*/*" class="hidden" onchange="handleFileSelect('document')">
+                    <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect('camera')">
 
-                    <!-- Media Attachments -->
-                    <button onclick="window.toggleEmojiPanel()" class="media-button text-gray-600 hover:text-green-500 p-2 rounded-full" title="Emojis">
-                        <!-- Emoji Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-                    </button>
-                    <button onclick="window.toggleStickerPanel()" class="media-button text-gray-600 hover:text-green-500 p-2 rounded-full" title="Stickers">
-                        <!-- Sticker Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14v4a2 2 0 0 1-2 2h-4"/><path d="M14 20H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7z"/></svg>
-                    </button>
-                    <button onclick="document.getElementById('image-input').click()" class="media-button text-gray-600 hover:text-green-500 p-2 rounded-full">
-                        <!-- Image Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 8v.01"></path><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><path d="M4 15l4-4c.983-.983 2.14-1.474 3.473-1.474s2.49.491 3.473 1.474l4 4"></path></svg>
-                    </button>
-                    <button onclick="document.getElementById('video-input').click()" class="media-button text-gray-600 hover:text-green-500 p-2 rounded-full">
-                        <!-- Video Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"></path><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                    </button>
-                    
-                    <!-- Message Input -->
-                    <input type="text" id="message-input" placeholder="Type a message..." 
-                           class="flex-grow mx-2 p-3 border-2 border-gray-300 rounded-full focus:outline-none focus:border-green-500" 
-                           onkeyup="if(event.key === 'Enter') handleSendText()">
-
-                    <!-- Audio Recording / Send Button -->
-                    <div class="relative flex items-center">
-                        <!-- Record Button -->
-                        <button id="record-button" onclick="startRecording()" 
-                                class="media-button bg-whatsapp-light-green text-white p-3 rounded-full shadow-lg hover:bg-whatsapp-green transition duration-150">
-                            <svg id="record-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="21" x2="12" y2="23"></line></svg>
-                        </button>
+                    <!-- WhatsApp-style Message Input Container -->
+                    <div class="message-input-container">
                         
-                        <!-- Stop Recording Button -->
-                        <button id="stop-record-button" onclick="stopRecording()" 
-                                class="hidden media-button bg-red-600 text-white p-3 rounded-full shadow-lg hover:bg-red-700 transition duration-150">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2" ry="2"></rect></svg>
+                        <!-- Emoji Button -->
+                        <button onclick="window.toggleEmojiPanel()" class="emoji-btn" title="Emojis">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
                         </button>
 
-                        <!-- Send Text Button (appears when typing) -->
-                        <button id="send-text-button" onclick="handleSendText()"
-                                class="media-button bg-whatsapp-light-green text-white p-3 rounded-full shadow-lg hover:bg-whatsapp-green transition duration-150 absolute right-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        <!-- Attachment Button with Menu -->
+                        <div class="relative">
+                            <button onclick="toggleAttachmentMenu()" class="attachment-btn" title="Attach">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66L9.64 16.2a2 2 0 0 1-2.83-2.83l8.49-8.49"/>
+                                </svg>
+                            </button>
+                            
+                            <!-- Attachment Menu -->
+                            <div id="attachment-menu" class="attachment-menu hidden">
+                                <div class="attachment-menu-item" onclick="selectPhotosAndVideos()">
+                                    <div class="attachment-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                                            <polyline points="21 15 16 10 5 21"/>
+                                        </svg>
+                                    </div>
+                                    <div class="attachment-menu-text">Photos & videos</div>
+                                </div>
+                                
+                                <div class="attachment-menu-item" onclick="openCamera()">
+                                    <div class="attachment-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                                            <circle cx="12" cy="13" r="4"/>
+                                        </svg>
+                                    </div>
+                                    <div class="attachment-menu-text">Camera</div>
+                                </div>
+                                
+                                <div class="attachment-menu-item" onclick="selectDocument()">
+                                    <div class="attachment-menu-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                            <polyline points="14 2 14 8 20 8"/>
+                                            <line x1="16" y1="13" x2="8" y2="13"/>
+                                            <line x1="16" y1="17" x2="8" y2="17"/>
+                                            <polyline points="10 9 9 9 8 9"/>
+                                        </svg>
+                                    </div>
+                                    <div class="attachment-menu-text">Document</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Message Input -->
+                        <input type="text" id="message-input" placeholder="Type a message" 
+                               class="message-input" 
+                               onkeyup="if(event.key === 'Enter') handleSendText()">
+
+                        <!-- Send/Record Button -->
+                        <button id="send-button" onclick="handleSendText()" class="send-btn" title="Send">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
                         </button>
 
+                        <!-- Record Button (hidden by default) -->
+                        <button id="record-button" onclick="startRecording()" class="send-btn hidden" title="Record">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                            </svg>
+                        </button>
+
+                        <!-- Stop Recording Button (hidden by default) -->
+                        <button id="stop-record-button" onclick="stopRecording()" class="send-btn hidden" style="background-color: #dc2626;" title="Stop">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor">
+                                <rect x="6" y="6" width="12" height="12" rx="2" ry="2"/>
+                            </svg>
+                        </button>
+
+                        <!-- Loading Indicator (hidden by default) -->
+                        <div id="loading-indicator" class="send-btn hidden flex items-center justify-center" style="background-color: #6b7280;" title="Uploading...">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Text -->
+                    <div id="loading-text" class="hidden text-sm text-gray-500 text-center mt-2"></div>
+                    
+                    <!-- Recording Interface -->
+                    <div id="recording-interface" class="hidden mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <!-- Recording indicator -->
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm font-medium text-red-700">Recording</span>
+                                </div>
+                                
+                                <!-- Recording timer -->
+                                <div class="text-sm text-red-600 font-mono" id="recording-timer">00:00</div>
+                            </div>
+                            
+                            <!-- Voice level bars -->
+                            <div class="flex items-center space-x-1" id="voice-level-bars">
+                                <div class="voice-level-bar w-1 h-2 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-3 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-4 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-5 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-6 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-4 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-3 bg-red-300 rounded-full"></div>
+                                <div class="voice-level-bar w-1 h-2 bg-red-300 rounded-full"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1797,47 +3047,18 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const messageInput = document.getElementById('message-input');
-            const recordButton = document.getElementById('record-button');
-            const sendTextButton = document.getElementById('send-text-button');
-            const stopRecordButton = document.getElementById('stop-record-button');
 
             // Initial state: Show record button, hide send button
-            sendTextButton.style.display = 'none';
+            updateMessageButtons();
 
-            messageInput.addEventListener('input', () => {
-                // FIX: Check for the existence of window.mediaRecorder before checking its state
-                const isRecording = window.mediaRecorder && window.mediaRecorder.state === 'recording';
-
-                if (messageInput.value.trim().length > 0) {
-                    recordButton.style.display = 'none';
-                    stopRecordButton.classList.add('hidden'); // Ensure stop is hidden when typing
-                    if (!isRecording) {
-                        sendTextButton.style.display = 'block';
-                    }
-                } else {
-                    sendTextButton.style.display = 'none';
-                    // Safely check for mediaRecorder existence on the window object.
-                    if (!isRecording) {
-                         recordButton.style.display = 'block';
-                    }
-                }
-            });
+            messageInput.addEventListener('input', updateMessageButtons);
 
             // Make sure media buttons handle visibility correctly after recording logic
-            const updateButtonsAfterMedia = () => {
-                // If input is empty, revert to record button.
-                if (messageInput.value.trim().length === 0) {
-                    recordButton.style.display = 'block';
-                    sendTextButton.style.display = 'none';
-                }
-                stopRecordButton.classList.add('hidden');
-            };
-
             const originalStopRecording = window.stopRecording;
             window.stopRecording = function() {
                 originalStopRecording();
                 // A small delay to allow the async upload process to start before resetting UI
-                setTimeout(updateButtonsAfterMedia, 500);
+                setTimeout(updateMessageButtons, 500);
             }
         });
         
