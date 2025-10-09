@@ -1,2 +1,0 @@
-# whatsapp-chat-app
-chatapp
